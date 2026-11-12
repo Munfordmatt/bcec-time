@@ -1,0 +1,538 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#111111">
+<title>BCEC Time</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23111'/%3E%3Cpath d='M18 3 7 18h7l-2 11 11-15h-7z' fill='%23E31B23'/%3E%3C/svg%3E">
+<style>
+:root{--red:#E31B23;--ink:#111;--mut:#666;--bg:#f4f4f2;--card:#fff;--line:#ddd;--ok:#1a7f37;--warn:#c25e00;--miss:#fde2e2}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.35 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+button,input,select,textarea{font:inherit;color:inherit}
+header{background:var(--ink);color:#fff;display:flex;align-items:center;gap:10px;padding:10px 14px;position:sticky;top:0;z-index:5}
+header .brand{display:flex;align-items:center;gap:8px;font-weight:800;letter-spacing:.5px;font-size:18px}
+header .sp{flex:1}
+header button{background:transparent;border:1px solid #555;color:#fff;border-radius:8px;padding:6px 10px;font-size:14px}
+main{max-width:720px;margin:0 auto;padding:14px 12px 120px}
+main.wide{max-width:1200px}
+h1{font-size:24px;margin:6px 0 12px}
+h2{font-size:19px;margin:18px 0 8px}
+.mut{color:var(--mut)}.small{font-size:13px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin:10px 0}
+.btn{display:block;width:100%;border:0;border-radius:14px;padding:16px;font-size:19px;font-weight:700;background:var(--red);color:#fff;cursor:pointer}
+.btn.dark{background:var(--ink)}.btn.ghost{background:#fff;color:var(--ink);border:2px solid var(--ink)}
+.btn.sm{display:inline-block;width:auto;padding:9px 14px;font-size:15px;border-radius:10px}
+.btn:disabled{opacity:.5}
+.names{display:grid;grid-template-columns:1fr;gap:8px}
+.names button{background:#fff;border:2px solid var(--line);border-radius:12px;padding:10px 15px;font-size:19px;font-weight:600;text-align:left;display:flex;align-items:center;gap:12px}
+.names button:active{border-color:var(--red)}
+.avatar{width:42px;height:42px;border-radius:50%;flex:none;position:relative;overflow:hidden;background:#2a2a2a;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;letter-spacing:.02em;line-height:1}
+.avatar.sm{width:28px;height:28px;font-size:11px}
+.avatar.lg{width:52px;height:52px;font-size:18px}
+.avatar .in{position:relative;z-index:0}
+.avatar img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;background:#2a2a2a;z-index:1}
+.who-chip,.person{display:inline-flex;align-items:center;gap:8px;min-width:0}
+.who-chip .avatar{border:1px solid #444}
+input.big,select.big,textarea.big{width:100%;padding:14px;border:2px solid var(--line);border-radius:12px;background:#fff;font-size:18px}
+input.big:focus,textarea.big:focus{outline:none;border-color:var(--ink)}
+.pinbox{display:flex;justify-content:center;gap:12px;margin:18px 0}
+.pinbox span{width:22px;height:22px;border-radius:50%;border:3px solid var(--ink)}
+.pinbox span.on{background:var(--ink)}
+.pad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:340px;margin:0 auto}
+.pad button{padding:18px 0;font-size:28px;font-weight:700;border-radius:14px;border:2px solid var(--line);background:#fff}
+.pad button:active{background:#eee}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:2px solid var(--line);background:#fff;border-radius:999px;padding:10px 14px;font-size:16px;font-weight:600}
+.chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.chip:disabled{opacity:.35}
+.days .day{display:flex;gap:10px;align-items:flex-start;background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:8px 0}
+.day .dl{width:64px;flex:none;font-weight:800}
+.day .dl small{display:block;font-weight:500;color:var(--mut)}
+.day .de{flex:1;min-width:0}
+.day.today{border:2px solid var(--red)}
+.ent{display:flex;justify-content:space-between;gap:8px;padding:6px 0;border-bottom:1px dashed #e5e5e5;width:100%;background:none;border-left:0;border-right:0;border-top:0;text-align:left}
+.ent:last-child{border-bottom:0}
+.ent b{font-size:17px}
+.ent .h{font-weight:800;font-size:18px;white-space:nowrap}
+.add{border:2px dashed #bbb;background:#fafafa;border-radius:10px;padding:8px 12px;font-weight:700;color:#444;margin-top:4px}
+.total{display:flex;justify-content:space-between;align-items:baseline}
+.total .n{font-size:40px;font-weight:800}
+.status{display:inline-block;padding:3px 10px;border-radius:999px;font-size:13px;font-weight:700;background:#e8f3ea;color:var(--ok)}
+.status.approved{background:#e7eefc;color:#1d4ed8}.status.locked{background:#eee;color:#333}
+.stepper{display:flex;align-items:center;gap:10px}
+.stepper button{width:64px;height:64px;font-size:32px;font-weight:800;border-radius:14px;border:2px solid var(--ink);background:#fff}
+.stepper .v{flex:1;text-align:center;font-size:44px;font-weight:800}
+.seg{display:flex;border:2px solid var(--ink);border-radius:12px;overflow:hidden}
+.seg button{flex:1;padding:12px;border:0;background:#fff;font-weight:700;font-size:16px}
+.seg button.on{background:var(--ink);color:#fff}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+label.l{display:block;font-weight:700;margin:16px 0 8px;font-size:17px}
+.sticky{position:fixed;left:0;right:0;bottom:0;padding:12px;background:linear-gradient(transparent,var(--bg) 25%);z-index:4}
+.sticky .in{max-width:720px;margin:0 auto}
+.toast{position:fixed;left:50%;top:70px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:12px 18px;border-radius:12px;font-weight:700;z-index:50;max-width:90vw;text-align:center}
+.toast.err{background:var(--red)}
+.banner{background:#fff4e5;border:1px solid #f0c27a;border-radius:12px;padding:10px 12px;margin:10px 0;font-weight:600}
+.banner.err{background:#fde2e2;border-color:#f5a3a3}
+.loading{opacity:.6;pointer-events:none}
+.spin{display:inline-block;width:18px;height:18px;border:3px solid #ccc;border-top-color:var(--red);border-radius:50%;animation:s 0.8s linear infinite;vertical-align:middle}
+@keyframes s{to{transform:rotate(360deg)}}
+/* admin */
+.tabs{display:flex;gap:6px;overflow-x:auto;margin:8px 0;padding-bottom:4px}
+.tabs button{border:0;background:#e5e5e2;border-radius:10px;padding:10px 14px;font-weight:700;white-space:nowrap}
+.tabs button.on{background:var(--ink);color:#fff}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.kpi{background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px}
+.kpi .n{font-size:24px;font-weight:800}.kpi .t{font-size:12px;color:var(--mut)}
+.kpi.warn .n{color:var(--warn)}.kpi.bad .n{color:var(--red)}
+.tw{overflow-x:auto;background:#fff;border:1px solid var(--line);border-radius:12px}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{padding:8px 6px;border-bottom:1px solid #eee;text-align:right;white-space:nowrap}
+th:first-child,td:first-child{text-align:left;position:sticky;left:0;background:#fff;z-index:1}
+th{background:#fafafa;font-size:12px;color:#444}
+td.miss{background:var(--miss);color:var(--red);font-weight:700}
+td.ot{color:var(--warn);font-weight:800}
+tr.tot td{font-weight:800;background:#fafafa}
+tr.click{cursor:pointer}
+.sub{background:#fafafa}
+.tag{display:inline-block;background:#ffe9d6;color:var(--warn);font-weight:800;font-size:11px;border-radius:6px;padding:1px 6px;margin-left:4px}
+.weeknav{display:flex;align-items:center;gap:8px;justify-content:space-between}
+.weeknav button{min-width:48px}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:20;display:flex;align-items:flex-end;justify-content:center}
+.modal .box{background:var(--bg);width:100%;max-width:720px;max-height:94vh;overflow:auto;border-radius:18px 18px 0 0;padding:16px 14px 24px}
+@media(min-width:700px){.modal{align-items:center}.modal .box{border-radius:18px}}
+@media(max-width:380px){.kpis{grid-template-columns:repeat(2,1fr)}.day .dl{width:54px}}
+.hide{display:none!important}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><svg width="26" height="26" viewBox="0 0 32 32" aria-hidden="true"><path d="M18 2 6 18h7.5L11 30l13-17h-7.5z" fill="#E31B23"/></svg>BCEC <span style="font-weight:500;opacity:.8">Time</span></div>
+  <div class="sp"></div>
+  <span id="who" class="small" style="opacity:.85"></span>
+  <button id="hdrBtn" class="hide"></button>
+</header>
+<main id="app"><p class="mut"><span class="spin"></span> Loading…</p></main>
+<script>window.BCEC_CONFIG={api:"https://script.google.com/macros/s/AKfycbzkpezmd-i75TqMAjWIL_Vo9b4llAKhoRaQXxQty4KvdwKAHCtWK-G0cT-Mtu_tVO4v/exec"};</script>
+<script>
+(function(){
+'use strict';
+var CFG = window.BCEC_CONFIG || {};
+var API = CFG.api || '__API_URL__';
+var VIEW = (/office\.html$/.test(location.pathname) || location.search.indexOf('office') >= 0 || location.hash.indexOf('office') >= 0 || '__VIEW__' === 'office') ? 'office' : 'crew';
+var LS = { get: function(k){ try { return JSON.parse(localStorage.getItem('bcec_'+k)); } catch(e){ return null; } }, set: function(k,v){ try { localStorage.setItem('bcec_'+k, JSON.stringify(v)); } catch(e){} }, del: function(k){ try { localStorage.removeItem('bcec_'+k); } catch(e){} } };
+var DAYS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+var $app = document.getElementById('app');
+
+/* ---------- transport ---------- */
+function call(action, data){
+  var body = Object.assign({ action: action }, data || {});
+  if (window.google && google.script && google.script.run) {
+    return new Promise(function(res, rej){ google.script.run.withSuccessHandler(function(r){ r && r.ok ? res(r) : rej(new Error((r && r.error) || 'Something went wrong')); }).withFailureHandler(function(e){ rej(new Error('No connection. Try again.')); }).api(body); });
+  }
+  if (!API || API.indexOf('__') === 0) return Promise.reject(new Error('App is not connected to the time sheet yet.'));
+  return fetch(API, { method: 'POST', body: JSON.stringify(body), redirect: 'follow' })
+    .then(function(r){ if (!r.ok) throw new Error('Server error ' + r.status); return r.json(); }, function(){ throw new Error('No connection. Check signal and try again.'); })
+    .then(function(r){ if (!r.ok) throw new Error(r.error || 'Something went wrong'); return r; });
+}
+
+/* ---------- utils ---------- */
+function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+function pd(s){ var p = s.split('-'); return Date.UTC(+p[0], +p[1]-1, +p[2]); }
+function fd(ms){ var d = new Date(ms); return d.getUTCFullYear()+'-'+('0'+(d.getUTCMonth()+1)).slice(-2)+'-'+('0'+d.getUTCDate()).slice(-2); }
+function addD(s,n){ return fd(pd(s)+n*86400000); }
+function wkStart(s){ var dow = new Date(pd(s)).getUTCDay(); return addD(s, -((dow+6)%7)); }
+function md(s){ var p = s.split('-'); return (+p[1])+'/'+(+p[2]); }
+function mdy(s){ var p = s.split('-'); return (+p[1])+'/'+(+p[2])+'/'+p[0]; }
+function weekDates(ws){ var a=[]; for (var i=0;i<7;i++) a.push(addD(ws,i)); return a; }
+function chicagoToday(){ try { return new Intl.DateTimeFormat('en-CA',{timeZone:'America/Chicago',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date()); } catch(e){ return fd(Date.now()-6*3600000); } }
+function h(n){ n = Math.round(n*100)/100; return (n % 1 === 0 ? n.toFixed(0) : String(n)); }
+function t12(t){ if(!t) return ''; var p=t.split(':'), H=+p[0], ap=H>=12?'p':'a'; H=H%12||12; return H+':'+p[1]+ap; }
+function uuid(){ return (crypto && crypto.randomUUID) ? crypto.randomUUID() : 'e'+Date.now().toString(36)+Math.random().toString(36).slice(2,10); }
+function hoursFrom(s,e,l){ var a=s.split(':'),b=e.split(':'); var m=(+b[0]*60+ +b[1])-(+a[0]*60+ +a[1]); if(m<=0)m+=1440; m-=(+l||0); return Math.round(m/60*4)/4; }
+var toastT;
+function toast(msg, err){ var t=document.querySelector('.toast'); if(t) t.remove(); t=document.createElement('div'); t.className='toast'+(err?' err':''); t.textContent=msg; document.body.appendChild(t); clearTimeout(toastT); toastT=setTimeout(function(){ t.remove(); }, err?4500:2200); }
+function initials(name){ var p=String(name||'').trim().split(/\s+/).filter(Boolean); if(!p.length) return '?'; var a=p[0].charAt(0), b=p.length>1?p[p.length-1].charAt(0):(p[0].charAt(1)||''); return (a+b).toUpperCase(); }
+var PHOTO_MAP = {};
+function loadPhotoMap(){ return fetch('photos/manifest.json').then(function(r){ return r.ok?r.json():{}; }).then(function(m){ if(m&&typeof m==='object') PHOTO_MAP=m; }).catch(function(){}); }
+function photoSrc(id){ var f=PHOTO_MAP[id]; if(f){ if(/^https?:\/\//i.test(f)||f.indexOf('photos/')===0||f.charAt(0)==='/') return f; return 'photos/'+f; } return 'photos/'+encodeURIComponent(id)+'.jpg'; }
+function avatarHtml(id, name, size){ var cls='avatar'+(size==='sm'?' sm':size==='lg'?' lg':''); return '<span class="'+cls+'" aria-hidden="true"><span class="in">'+esc(initials(name))+'</span>'+(id?'<img alt="" src="'+esc(photoSrc(id))+'" onerror="this.remove()">':'')+'</span>'; }
+function pickWorkerPhoto(w){
+  var inp=document.createElement('input'); inp.type='file'; inp.accept='image/*';
+  inp.onchange=function(){ var f=inp.files&&inp.files[0]; if(!f) return;
+    var url=URL.createObjectURL(f), img=new Image();
+    img.onload=function(){ URL.revokeObjectURL(url); var c=document.createElement('canvas'); c.width=c.height=200;
+      var s=Math.min(img.width,img.height)||1, sx=(img.width-s)/2, sy=(img.height-s)/2;
+      c.getContext('2d').drawImage(img,sx,sy,s,s,0,0,200,200);
+      c.toBlob(function(blob){ if(!blob) return toast('Could not read that picture', true);
+        var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=w.id+'.jpg'; a.click();
+        setTimeout(function(){ URL.revokeObjectURL(a.href); }, 2000);
+        toast('Downloaded '+w.id+'.jpg. Put it in the photos folder and republish to make it live. The site is public — Matt should OK it first.');
+      }, 'image/jpeg', 0.85);
+    };
+    img.onerror=function(){ URL.revokeObjectURL(url); toast('Could not read that picture', true); };
+    img.src=url;
+  };
+  inp.click();
+}
+function hdr(who, btnText, fn, worker){ var el=document.getElementById('who'); if(!who) el.innerHTML=''; else if(worker&&worker.id) el.innerHTML='<span class="who-chip">'+avatarHtml(worker.id, who, 'sm')+'<span>'+esc(who)+'</span></span>'; else el.textContent=who; var b=document.getElementById('hdrBtn'); if(btnText){ b.textContent=btnText; b.onclick=fn; b.classList.remove('hide'); } else b.classList.add('hide'); }
+function busy(el, on){ if(el) el.classList.toggle('loading', !!on); }
+
+/* ---------- OT math (shared idea with payroll) ---------- */
+function computeWeek(entries, ws, rule){
+  var dates = weekDates(ws), day = dates.map(function(){ return 0; });
+  entries.forEach(function(e){ var i = dates.indexOf(e.date); if (i>=0) day[i] += +e.hours||0; });
+  var reg = [], ot = [], cum = 0;
+  day.forEach(function(d){
+    var r = d, o = 0;
+    if (rule === 'daily8' && r > 8){ o = r-8; r = 8; }
+    if (cum + r > 40){ var over = cum + r - 40; o += over; r -= over; }
+    cum += r; reg.push(r); ot.push(o);
+  });
+  var sum = function(a){ return a.reduce(function(s,x){ return s+x; }, 0); };
+  return { day: day, reg: reg, ot: ot, total: sum(day), regT: sum(reg), otT: sum(ot) };
+}
+
+/* =================== CREW (worker) SIDE =================== */
+var S = { boot: LS.get('boot'), token: LS.get('token'), me: LS.get('me'), week: null, ws: null };
+
+function crewStart(){
+  hdr('', null);
+  loadPhotoMap().then(function(){
+    if (S.token && S.me) return loadMyWeek();
+    if (S.boot) showNames();
+    call('bootstrap').then(function(r){ S.boot = { workers: r.workers, jobs: r.jobs }; LS.set('boot', S.boot); if (!S.token) showNames(); })
+      .catch(function(e){ if (!S.boot) $app.innerHTML = '<div class="banner err">'+esc(e.message)+'</div><button class="btn" onclick="location.reload()">Try again</button>'; });
+  });
+}
+function showNames(){
+  hdr('', 'Office', function(){ go(officeHref()); });
+  var ws = S.boot.workers;
+  $app.innerHTML = '<h1>Who are you?</h1><p class="mut">Tap your name.</p>'+
+    (ws.length > 8 ? '<input id="q" class="big" placeholder="Search name" autocomplete="off" style="margin-bottom:10px">' : '')+
+    '<div class="names" id="names"></div><p class="small mut" style="margin-top:18px">Not on the list? Ask the office to add you.</p>';
+  function draw(q){ q=(q||'').toLowerCase(); document.getElementById('names').innerHTML = ws.filter(function(w){ return w.name.toLowerCase().indexOf(q)>=0; }).map(function(w){ return '<button data-id="'+esc(w.id)+'">'+avatarHtml(w.id,w.name)+'<span>'+esc(w.name)+'</span></button>'; }).join('') || '<p class="mut">No match.</p>'; }
+  draw('');
+  var q = document.getElementById('q'); if (q) q.oninput = function(){ draw(q.value); };
+  document.getElementById('names').onclick = function(ev){ var b = ev.target.closest('button'); if (!b) return; var w = ws.filter(function(x){ return x.id === b.dataset.id; })[0]; showPin(w); };
+}
+function pinPad(title, sub, maxLen, onDone, onBack){
+  var pin = '';
+  $app.innerHTML = '<h1>'+esc(title)+'</h1><p class="mut">'+esc(sub)+'</p><div class="pinbox" id="dots"></div><div class="pad" id="pad">'+
+    [1,2,3,4,5,6,7,8,9].map(function(n){ return '<button data-k="'+n+'">'+n+'</button>'; }).join('')+
+    '<button data-k="back" aria-label="Back">⌫</button><button data-k="0">0</button>'+(maxLen>4?'<button data-k="ok" style="background:var(--ink);color:#fff">OK</button>':'<button data-k="cancel" style="font-size:16px">Not me</button>')+'</div>'+
+    (maxLen>4?'<p style="text-align:center"><button class="btn sm ghost" id="cancel">Back</button></p>':'');
+  function dots(){ var n = maxLen>4 ? Math.max(4, pin.length) : 4; var s=''; for (var i=0;i<n;i++) s+='<span class="'+(i<pin.length?'on':'')+'"></span>'; document.getElementById('dots').innerHTML = s; }
+  dots();
+  var c = document.getElementById('cancel'); if (c) c.onclick = onBack;
+  document.getElementById('pad').onclick = function(ev){
+    var b = ev.target.closest('button'); if (!b) return; var k = b.dataset.k;
+    if (k === 'back') pin = pin.slice(0,-1);
+    else if (k === 'cancel') return onBack();
+    else if (k === 'ok') { if (pin.length >= 4) onDone(pin, reset); return; }
+    else if (pin.length < maxLen) pin += k;
+    dots();
+    if (maxLen === 4 && pin.length === 4) onDone(pin, reset);
+  };
+  document.onkeydown = function(ev){ if (/^\d$/.test(ev.key) && pin.length<maxLen){ pin+=ev.key; dots(); if(maxLen===4&&pin.length===4) onDone(pin, reset); } else if (ev.key==='Backspace'){ pin=pin.slice(0,-1); dots(); } else if (ev.key==='Enter' && maxLen>4 && pin.length>=4) onDone(pin, reset); };
+  function reset(){ pin=''; dots(); }
+}
+function showPin(w){
+  hdr(w.name, null, null, w);
+  pinPad('Hi, '+w.name.split(' ')[0], 'Enter your 4-number PIN', 4, function(pin, reset){
+    busy($app, true);
+    call('login', { workerId: w.id, pin: pin }).then(function(r){
+      document.onkeydown = null; S.token = r.token; S.me = r.worker; LS.set('token', r.token); LS.set('me', r.worker); busy($app,false); loadMyWeek();
+    }).catch(function(e){ busy($app,false); toast(e.message, true); reset(); });
+  }, function(){ document.onkeydown=null; showNames(); });
+}
+function signOut(){ LS.del('token'); LS.del('me'); S.token = S.me = null; S.week = null; crewStart(); }
+function loadMyWeek(ws){
+  hdr(S.me.name, 'Sign out', signOut, S.me);
+  if (!S.week) $app.innerHTML = '<p class="mut"><span class="spin"></span> Loading your week…</p>'; else busy($app, true);
+  return call('myWeek', { token: S.token, weekStart: ws || S.ws || '' }).then(function(r){
+    busy($app,false); S.week = r; S.ws = r.weekStart; S.today = r.today; drawWeek();
+  }).catch(function(e){ busy($app,false); if (/sign in/i.test(e.message)) { toast(e.message, true); return signOut(); } $app.innerHTML = '<div class="banner err">'+esc(e.message)+'</div><button class="btn" id="rt">Try again</button>'; document.getElementById('rt').onclick=function(){ loadMyWeek(ws); }; });
+}
+function drawWeek(){
+  var W = S.week, dates = weekDates(W.weekStart), cur = wkStart(W.today), isCur = W.weekStart === cur;
+  var tot = W.entries.reduce(function(s,e){ return s + e.hours; }, 0);
+  var canEdit = W.status === 'open' && (isCur || W.weekStart === addD(cur,-7));
+  var html = '<div class="weeknav"><button class="btn sm ghost" id="prev" '+(isCur?'':'disabled')+'>‹ Last week</button><div style="text-align:center"><b>'+(isCur?'This week':'Last week')+'</b><div class="small mut">'+md(dates[0])+' – '+md(dates[6])+' (WE '+md(dates[6])+')</div></div><button class="btn sm ghost" id="next" '+(isCur?'disabled':'')+'>This week ›</button></div>';
+  html += '<div class="card total"><div><div class="mut">My hours</div><span class="status '+W.status+'">'+(W.status==='open'?'Open':W.status==='approved'?'Approved':'Locked')+'</span></div><div class="n" id="tot">'+h(tot)+'</div></div>';
+  if (!canEdit) html += '<div class="banner">'+(W.status==='open'?'This week is closed for changes.':'This week is '+W.status+' by the office. Call the office to fix anything.')+'</div>';
+  html += '<div class="days">';
+  dates.forEach(function(d, i){
+    var es = W.entries.filter(function(e){ return e.date === d; });
+    var future = d > W.today;
+    html += '<div class="day'+(d===W.today?' today':'')+'"><div class="dl">'+DAYS[i]+'<small>'+md(d)+'</small></div><div class="de">'+
+      es.map(function(e){ return '<button class="ent" data-id="'+esc(e.id)+'" '+(canEdit?'':'disabled')+'><span><b>'+esc(e.job)+'</b>'+(e.start?'<br><span class="small mut">'+t12(e.start)+'–'+t12(e.end)+(+e.lunchMin?' · '+e.lunchMin+'m lunch':'')+'</span>':'')+(e.notes?'<br><span class="small mut">'+esc(e.notes)+'</span>':'')+'</span><span class="h">'+h(e.hours)+'h</span></button>'; }).join('')+
+      (canEdit && !future ? '<button class="add" data-d="'+d+'">+ Add</button>' : (es.length?'':'<span class="small mut">'+(future?'':'—')+'</span>'))+
+      '</div></div>';
+  });
+  html += '</div>';
+  if (canEdit) html += '<div class="sticky"><div class="in"><button class="btn" id="addToday">+ Add time'+(isCur?' for today':'')+'</button></div></div>';
+  $app.innerHTML = html;
+  document.getElementById('prev').onclick = function(){ loadMyWeek(addD(cur,-7)); };
+  document.getElementById('next').onclick = function(){ loadMyWeek(cur); };
+  var at = document.getElementById('addToday'); if (at) at.onclick = function(){ entryForm({ date: isCur ? W.today : dates[6] }, false); };
+  $app.querySelector('.days').onclick = function(ev){
+    var b = ev.target.closest('button'); if (!b || b.disabled) return;
+    if (b.dataset.d) return entryForm({ date: b.dataset.d }, false);
+    var e = W.entries.filter(function(x){ return x.id === b.dataset.id; })[0]; if (e) entryForm(e, false);
+  };
+}
+
+/* ---------- shared entry form (crew + office) ---------- */
+function entryForm(e, office, ctx){
+  ctx = ctx || {};
+  var isNew = !e.id;
+  var f = { id: e.id || uuid(), date: e.date, job: e.job || '', mode: e.start ? 'times' : 'hours', hours: e.hours || 8, start: e.start || (LS.get('lastStart') || '07:00'), end: e.end || (LS.get('lastEnd') || '15:30'), lunchMin: e.lunchMin !== undefined && e.lunchMin !== '' ? +e.lunchMin : (e.start ? 0 : 30), notes: e.notes || '', workerId: e.workerId || ctx.workerId || '' };
+  var ws = office ? wkStart(f.date) : S.week.weekStart;
+  var today = office ? (A.today || chicagoToday()) : S.week.today;
+  var jobs = office ? A.data.jobs.filter(function(j){ return j.active; }) : (S.week.jobs || []);
+  var recent = office ? [] : (S.week.recentJobs || []);
+  var m = document.createElement('div'); m.className = 'modal';
+  function jobChips(){
+    var list = recent.slice(); jobs.forEach(function(j){ if (list.map(function(x){return x.toLowerCase();}).indexOf(j.code.toLowerCase())<0) list.push(j.code); });
+    if (f.job && list.map(function(x){return x.toLowerCase();}).indexOf(f.job.toLowerCase())<0) list.unshift(f.job);
+    var nameOf = {}; jobs.forEach(function(j){ nameOf[j.code] = j.name; });
+    return list.map(function(c){ return '<button class="chip'+(c.toLowerCase()===f.job.toLowerCase()?' on':'')+'" data-job="'+esc(c)+'">'+esc(c)+(nameOf[c]?' <span class="small" style="font-weight:500;opacity:.75">'+esc(nameOf[c])+'</span>':'')+'</button>'; }).join('');
+  }
+  function draw(){
+    var dates = office ? weekDates(wkStart(f.date)) : weekDates(ws);
+    var calc = f.mode === 'times' ? hoursFrom(f.start, f.end, f.lunchMin) : f.hours;
+    m.innerHTML = '<div class="box"><div style="display:flex;justify-content:space-between;align-items:center"><h1 style="margin:0">'+(isNew?'Add time':'Fix time')+'</h1><button class="btn sm ghost" data-a="close">Cancel</button></div>'+
+      (office ? '<label class="l">Worker</label><select class="big" id="fw">'+'<option value="">— pick —</option>'+A.data.workers.filter(function(w){ return w.active || w.id===f.workerId; }).map(function(w){ return '<option value="'+esc(w.id)+'" '+(w.id===f.workerId?'selected':'')+'>'+esc(w.name)+'</option>'; }).join('')+'</select>' : '')+
+      '<label class="l">Day</label><div class="chips" id="fd">'+dates.map(function(d,i){ return '<button class="chip'+(d===f.date?' on':'')+'" data-d="'+d+'" '+(!office && d>today?'disabled':'')+'>'+DAYS[i]+' '+md(d)+'</button>'; }).join('')+'</div>'+
+      (office ? '<div style="margin-top:8px"><input type="date" class="big" id="fdate" value="'+f.date+'"></div>' : '')+
+      '<label class="l">Job</label><div class="chips" id="fj">'+jobChips()+'</div><input class="big" id="fjob" style="margin-top:8px" placeholder="Or type job # / name" value="'+esc(f.job)+'" autocomplete="off">'+
+      '<label class="l">Time</label><div class="seg" id="fm"><button data-m="hours" class="'+(f.mode==='hours'?'on':'')+'">Hours</button><button data-m="times" class="'+(f.mode==='times'?'on':'')+'">Start / Stop</button></div>'+
+      (f.mode === 'hours' ?
+        '<div class="stepper" style="margin-top:12px"><button data-a="minus">−</button><div class="v" id="hv">'+h(f.hours)+'</div><button data-a="plus">+</button></div><div class="chips" style="margin-top:10px;justify-content:center">'+[2,4,6,8,9,10,12].map(function(n){ return '<button class="chip'+(n===f.hours?' on':'')+'" data-h="'+n+'">'+n+'</button>'; }).join('')+'</div>'
+        : '<div class="row2" style="margin-top:12px"><div><div class="small mut">Start</div><input type="time" class="big" id="fs" value="'+f.start+'" step="900"></div><div><div class="small mut">Stop</div><input type="time" class="big" id="fe" value="'+f.end+'" step="900"></div></div><div class="small mut" style="margin-top:10px">Lunch (unpaid)</div><div class="chips" id="fl">'+[[0,'None'],[30,'30 min'],[60,'1 hour']].map(function(x){ return '<button class="chip'+(x[0]===f.lunchMin?' on':'')+'" data-l="'+x[0]+'">'+x[1]+'</button>'; }).join('')+'</div><div class="card total" style="margin-top:12px"><span class="mut">Hours</span><span class="n" id="hc" style="font-size:32px">'+h(calc)+'</span></div>')+
+      '<label class="l">Notes <span class="mut small">(optional)</span></label><textarea class="big" id="fn" rows="2" placeholder="What you worked on">'+esc(f.notes)+'</textarea>'+
+      '<div style="margin-top:18px"><button class="btn" data-a="save">Save '+h(calc)+' hours</button></div>'+
+      (!isNew ? '<div style="margin-top:12px"><button class="btn ghost" data-a="del">Delete this entry</button></div>' : '')+
+      '</div>';
+    var fj = m.querySelector('#fjob'); fj.oninput = function(){ f.job = fj.value; m.querySelectorAll('#fj .chip').forEach(function(c){ c.classList.toggle('on', c.dataset.job.toLowerCase()===f.job.trim().toLowerCase()); }); };
+    var fn = m.querySelector('#fn'); fn.oninput = function(){ f.notes = fn.value; };
+    var fs = m.querySelector('#fs'), fe = m.querySelector('#fe');
+    function rec(){ var c = hoursFrom(f.start, f.end, f.lunchMin); m.querySelector('#hc').textContent = h(c); m.querySelector('[data-a=save]').textContent = 'Save '+h(c)+' hours'; }
+    if (fs) { fs.onchange = fs.oninput = function(){ if (fs.value) { f.start = fs.value; rec(); } }; fe.onchange = fe.oninput = function(){ if (fe.value) { f.end = fe.value; rec(); } }; }
+    var fw = m.querySelector('#fw'); if (fw) fw.onchange = function(){ f.workerId = fw.value; };
+    var fdt = m.querySelector('#fdate'); if (fdt) fdt.onchange = function(){ if (fdt.value) { f.date = fdt.value; draw(); } };
+  }
+  m.onclick = function(ev){
+    if (ev.target === m) return close();
+    var b = ev.target.closest('button'); if (!b) return;
+    if (b.dataset.d) { f.date = b.dataset.d; return draw(); }
+    if (b.dataset.job) { f.job = b.dataset.job; return draw(); }
+    if (b.dataset.m) { f.mode = b.dataset.m; return draw(); }
+    if (b.dataset.h) { f.hours = +b.dataset.h; return draw(); }
+    if (b.dataset.l !== undefined) { f.lunchMin = +b.dataset.l; return draw(); }
+    var a = b.dataset.a;
+    if (a === 'close') return close();
+    if (a === 'minus') { f.hours = Math.max(0.5, f.hours - 0.5); return draw(); }
+    if (a === 'plus') { f.hours = Math.min(24, f.hours + 0.5); return draw(); }
+    if (a === 'save') return save(b);
+    if (a === 'del') return del(b);
+  };
+  function close(){ m.remove(); }
+  function save(b){
+    f.job = f.job.trim();
+    if (office && !f.workerId) return toast('Pick a worker', true);
+    if (!f.job) return toast('Pick or type a job', true);
+    var payload = { id: f.id, date: f.date, job: f.job, notes: f.notes, workerId: f.workerId };
+    if (f.mode === 'times') { payload.start = f.start; payload.end = f.end; payload.lunchMin = f.lunchMin; LS.set('lastStart', f.start); LS.set('lastEnd', f.end); } else payload.hours = f.hours;
+    b.disabled = true; b.innerHTML = '<span class="spin"></span> Saving…';
+    var p = office ? call('adminSaveEntry', { token: A.token, entry: payload }) : call('saveEntry', { token: S.token, entry: payload });
+    p.then(function(){ close(); toast('Saved ✓'); if (office) adminLoad(); else loadMyWeek(S.ws); })
+     .catch(function(e){ b.disabled = false; b.textContent = 'Try again'; toast(e.message, true); });
+  }
+  function del(b){
+    if (!confirm('Delete this entry?')) return;
+    b.disabled = true;
+    var p = office ? call('adminDeleteEntry', { token: A.token, id: f.id }) : call('deleteEntry', { token: S.token, id: f.id });
+    p.then(function(){ close(); toast('Deleted'); if (office) adminLoad(); else loadMyWeek(S.ws); }).catch(function(e){ b.disabled=false; toast(e.message, true); });
+  }
+  draw(); document.body.appendChild(m);
+}
+
+/* =================== OFFICE (admin) SIDE =================== */
+var A = { token: LS.get('atoken'), ws: null, data: null, tab: 'emp', open: {} };
+var GAS = !CFG.api && API.indexOf('__') !== 0;
+function officeHref(){ return GAS ? API + '?office' : 'office.html'; }
+function crewHref(){ return GAS ? API : './'; }
+function go(url){ try { window.open(url, '_top'); } catch(e){ location.href = url; } }
+function officeStart(){
+  document.querySelector('main').classList.add('wide');
+  loadPhotoMap().then(function(){
+  if (A.token) return adminLoad();
+  hdr('Office', 'Crew app', function(){ go(crewHref()); });
+  pinPad('Office sign-in', 'Enter the office PIN', 8, function(pin, reset){
+    busy($app, true);
+    call('adminLogin', { pin: pin }).then(function(r){ document.onkeydown=null; busy($app,false); A.token = r.token; LS.set('atoken', r.token); adminLoad(); })
+      .catch(function(e){ busy($app,false); toast(e.message, true); reset(); });
+  }, function(){ go(crewHref()); });
+  });
+}
+function adminOut(){ LS.del('atoken'); A.token = null; A.data = null; officeStart(); }
+function adminLoad(ws){
+  hdr('Office', 'Sign out', adminOut);
+  if (ws) A.ws = ws;
+  if (!A.data) $app.innerHTML = '<p class="mut"><span class="spin"></span> Loading week…</p>'; else busy($app, true);
+  return call('adminWeek', { token: A.token, weekStart: A.ws || '' }).then(function(r){ busy($app,false); A.data = r; A.ws = r.weekStart; A.today = r.today; drawAdmin(); })
+    .catch(function(e){ busy($app,false); if (/sign in/i.test(e.message)) { toast(e.message, true); return adminOut(); } $app.innerHTML = '<div class="banner err">'+esc(e.message)+'</div><button class="btn" onclick="location.reload()">Try again</button>'; });
+}
+function summarize(){
+  var D = A.data, dates = weekDates(D.weekStart), rule = D.otRule;
+  var byW = {};
+  D.entries.forEach(function(e){ (byW[e.workerId] = byW[e.workerId] || []).push(e); });
+  var rows = D.workers.filter(function(w){ return w.active || byW[w.id]; }).map(function(w){
+    var es = byW[w.id] || [], c = computeWeek(es, D.weekStart, rule);
+    var miss = dates.map(function(d,i){ return i < 5 && d <= D.today && c.day[i] === 0 && (w.active); });
+    return { w: w, es: es, c: c, miss: miss };
+  }).sort(function(a,b){ return a.w.name.localeCompare(b.w.name); });
+  var jobs = {};
+  D.entries.forEach(function(e){ var k = e.job; var j = jobs[k] = jobs[k] || { job: k, day: [0,0,0,0,0,0,0], total: 0, who: {} }; var i = dates.indexOf(e.date); j.day[i] += e.hours; j.total += e.hours; j.who[e.workerName] = (j.who[e.workerName]||0) + e.hours; });
+  var jl = Object.keys(jobs).map(function(k){ return jobs[k]; }).sort(function(a,b){ return b.total - a.total; });
+  return { dates: dates, rows: rows, jobs: jl };
+}
+function drawAdmin(){
+  var D = A.data, S2 = summarize(), dates = S2.dates, cur = wkStart(D.today);
+  var tot = 0, ot = 0, miss = 0, withTime = 0;
+  S2.rows.forEach(function(r){ tot += r.c.total; ot += r.c.otT; if (r.c.total) withTime++; miss += r.miss.filter(Boolean).length; });
+  var st = D.status;
+  var html = '<div class="weeknav"><button class="btn sm ghost" id="wp">‹</button><div style="text-align:center"><b>Week ending '+mdy(dates[6])+'</b><div class="small mut">'+md(dates[0])+' – '+md(dates[6])+' · <span class="status '+st+'">'+st.toUpperCase()+'</span>'+(D.statusInfo?' <span class="small">by '+esc(D.statusInfo.by)+'</span>':'')+'</div></div><button class="btn sm ghost" id="wn" '+(D.weekStart>=cur?'disabled':'')+'>›</button></div>';
+  html += '<div class="kpis" style="margin-top:10px"><div class="kpi"><div class="n">'+h(tot)+'</div><div class="t">Total hours</div></div><div class="kpi"><div class="n">'+withTime+'</div><div class="t">Workers with time</div></div><div class="kpi'+(ot?' warn':'')+'"><div class="n">'+h(ot)+'</div><div class="t">Overtime hours</div></div><div class="kpi'+(miss?' bad':'')+'"><div class="n">'+miss+'</div><div class="t">Missing weekdays</div></div></div>';
+  html += '<div class="actions">'+
+    (st==='open' ? '<button class="btn sm" data-st="approved" style="background:#1d4ed8">✓ Approve week</button><button class="btn sm dark" data-st="locked">🔒 Lock week</button>' : '')+
+    (st==='approved' ? '<button class="btn sm dark" data-st="locked">🔒 Lock week</button><button class="btn sm ghost" data-st="open">Reopen</button>' : '')+
+    (st==='locked' ? '<button class="btn sm ghost" data-st="open">Unlock / reopen</button>' : '')+
+    '<button class="btn sm ghost" data-x="payroll">⬇ Payroll CSV</button><button class="btn sm ghost" data-x="grid">⬇ Timesheet CSV</button><button class="btn sm ghost" data-x="detail">⬇ All entries CSV</button>'+
+    (st!=='locked' ? '<button class="btn sm ghost" data-a="add">+ Add entry</button>' : '')+'</div>';
+  html += '<div class="tabs">'+[['emp','By employee'],['job','By job'],['ent','All entries'],['crew','Crew & PINs'],['jobs','Job list'],['set','Settings']].map(function(t){ return '<button data-tab="'+t[0]+'" class="'+(A.tab===t[0]?'on':'')+'">'+t[1]+'</button>'; }).join('')+'</div><div id="tab"></div>';
+  $app.innerHTML = html;
+  document.getElementById('wp').onclick = function(){ adminLoad(addD(D.weekStart,-7)); };
+  document.getElementById('wn').onclick = function(){ adminLoad(addD(D.weekStart,7)); };
+  $app.querySelector('.actions').onclick = function(ev){
+    var b = ev.target.closest('button'); if (!b) return;
+    if (b.dataset.st) { var lbl = { approved: 'Approve', locked: 'Lock', open: 'Reopen' }[b.dataset.st]; if (!confirm(lbl+' week ending '+mdy(dates[6])+'?'+(b.dataset.st!=='open'?' Workers will not be able to change it.':''))) return; var by = (LS.get('officeName') || prompt('Your name (for the record):', 'Dana') || 'Office'); LS.set('officeName', by); b.disabled = true; call('setWeekStatus', { token: A.token, weekStart: D.weekStart, status: b.dataset.st, by: by }).then(function(){ toast('Week '+(b.dataset.st==='open'?'reopened':b.dataset.st)); adminLoad(); }).catch(function(e){ b.disabled=false; toast(e.message, true); }); }
+    if (b.dataset.x) exportCsv(b.dataset.x, S2);
+    if (b.dataset.a === 'add') entryForm({ date: D.today < dates[6] && D.today >= dates[0] ? D.today : dates[0] }, true);
+  };
+  $app.querySelector('.tabs').onclick = function(ev){ var b = ev.target.closest('button'); if (!b) return; A.tab = b.dataset.tab; drawAdmin(); };
+  drawTab(S2);
+}
+function drawTab(S2){
+  var D = A.data, dates = S2.dates, el = document.getElementById('tab'), locked = D.status === 'locked';
+  var dh = dates.map(function(d,i){ return '<th>'+DAYS[i]+'<br>'+md(d)+'</th>'; }).join('');
+  if (A.tab === 'emp') {
+    var t = '<div class="tw"><table><thead><tr><th>Employee</th>'+dh+'<th>Total</th><th>Reg</th><th>OT</th></tr></thead><tbody>';
+    var colT = [0,0,0,0,0,0,0], gt = 0, gr = 0, go = 0;
+    S2.rows.forEach(function(r){
+      t += '<tr class="click" data-w="'+esc(r.w.id)+'"><td><span class="person">'+avatarHtml(r.w.id,r.w.name,'sm')+'<span><b>'+esc(r.w.name)+'</b>'+(r.w.empNo?' <span class="small mut">#'+esc(r.w.empNo)+'</span>':'')+(r.c.otT?'<span class="tag">OT</span>':'')+(A.open[r.w.id]?' ▾':' ▸')+'</span></span></td>'+
+        r.c.day.map(function(v,i){ colT[i]+=v; return '<td class="'+(r.miss[i]?'miss':'')+'">'+(v?h(v):(r.miss[i]?'none':''))+'</td>'; }).join('')+
+        '<td><b>'+h(r.c.total)+'</b></td><td>'+h(r.c.regT)+'</td><td class="'+(r.c.otT?'ot':'')+'">'+(r.c.otT?h(r.c.otT):'')+'</td></tr>';
+      gt += r.c.total; gr += r.c.regT; go += r.c.otT;
+      if (A.open[r.w.id]) {
+        var es = r.es.slice().sort(function(a,b){ return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; });
+        t += '<tr class="sub"><td colspan="11" style="position:static;background:#fafafa;white-space:normal">'+(es.length? es.map(function(e){ return '<div class="ent" style="padding:6px 0"><span>'+DAYS[dates.indexOf(e.date)]+' '+md(e.date)+' · <b>'+esc(e.job)+'</b>'+(e.start?' · '+t12(e.start)+'–'+t12(e.end)+(+e.lunchMin?' ('+e.lunchMin+'m lunch)':''):'')+(e.notes?' · <span class="mut">'+esc(e.notes)+'</span>':'')+' <span class="small mut">· by '+esc(e.updatedBy)+'</span></span><span><b>'+h(e.hours)+'h</b> '+(locked?'':'<button class="btn sm ghost" data-e="'+esc(e.id)+'">Edit</button>')+'</span></div>'; }).join('') : '<span class="mut">No time this week.</span>')+
+          (locked?'':'<div style="margin-top:6px"><button class="btn sm ghost" data-addw="'+esc(r.w.id)+'">+ Add time for '+esc(r.w.name.split(' ')[0])+'</button></div>')+'</td></tr>';
+      }
+    });
+    t += '<tr class="tot"><td>Totals</td>'+colT.map(function(v){ return '<td>'+(v?h(v):'')+'</td>'; }).join('')+'<td>'+h(gt)+'</td><td>'+h(gr)+'</td><td class="'+(go?'ot':'')+'">'+(go?h(go):'')+'</td></tr></tbody></table></div>';
+    t += '<p class="small mut">Red "none" = a weekday with no time (up to today). OT = '+(D.otRule==='daily8'?'over 8 in a day or over 40 in the week':'over 40 hours in the week (Mon–Sun)')+'. Tap a name to see or fix entries.</p>';
+    el.innerHTML = t;
+    el.onclick = function(ev){
+      var b = ev.target.closest('button');
+      if (b && b.dataset.e) { var e = D.entries.filter(function(x){ return x.id === b.dataset.e; })[0]; return entryForm(e, true); }
+      if (b && b.dataset.addw) return entryForm({ date: D.today >= dates[0] && D.today <= dates[6] ? D.today : dates[0], workerId: b.dataset.addw }, true, { workerId: b.dataset.addw });
+      var tr = ev.target.closest('tr.click'); if (tr) { A.open[tr.dataset.w] = !A.open[tr.dataset.w]; drawTab(S2); }
+    };
+  } else if (A.tab === 'job') {
+    var t2 = '<div class="tw"><table><thead><tr><th>Job</th>'+dh+'<th>Total</th></tr></thead><tbody>';
+    var col = [0,0,0,0,0,0,0], g = 0;
+    S2.jobs.forEach(function(j){ g += j.total; t2 += '<tr><td><b>'+esc(j.job)+'</b><div class="small mut" style="white-space:normal">'+Object.keys(j.who).map(function(n){ return esc(n)+' '+h(j.who[n]); }).join(', ')+'</div></td>'+j.day.map(function(v,i){ col[i]+=v; return '<td>'+(v?h(v):'')+'</td>'; }).join('')+'<td><b>'+h(j.total)+'</b></td></tr>'; });
+    t2 += '<tr class="tot"><td>Totals</td>'+col.map(function(v){ return '<td>'+(v?h(v):'')+'</td>'; }).join('')+'<td>'+h(g)+'</td></tr></tbody></table></div>';
+    el.innerHTML = S2.jobs.length ? t2 : '<p class="mut">No time entered this week yet.</p>';
+  } else if (A.tab === 'ent') {
+    var es = D.entries.slice().sort(function(a,b){ return (a.date+a.workerName) < (b.date+b.workerName) ? -1 : 1; });
+    el.innerHTML = es.length ? '<div class="tw"><table><thead><tr><th>Date</th><th style="text-align:left">Employee</th><th style="text-align:left">Job</th><th>Start</th><th>Stop</th><th>Lunch</th><th>Hours</th><th style="text-align:left">Notes</th><th></th></tr></thead><tbody>'+es.map(function(e){ return '<tr><td>'+DAYS[dates.indexOf(e.date)]+' '+md(e.date)+'</td><td style="text-align:left">'+esc(e.workerName)+'</td><td style="text-align:left">'+esc(e.job)+'</td><td>'+t12(e.start)+'</td><td>'+t12(e.end)+'</td><td>'+(e.start?(+e.lunchMin||0)+'m':'')+'</td><td><b>'+h(e.hours)+'</b></td><td style="text-align:left;white-space:normal;min-width:140px">'+esc(e.notes)+'</td><td>'+(locked?'':'<button class="btn sm ghost" data-e="'+esc(e.id)+'">Edit</button>')+'</td></tr>'; }).join('')+'</tbody></table></div>' : '<p class="mut">No time entered this week yet.</p>';
+    el.onclick = function(ev){ var b = ev.target.closest('button'); if (b && b.dataset.e) entryForm(D.entries.filter(function(x){ return x.id === b.dataset.e; })[0], true); };
+  } else if (A.tab === 'crew') {
+    var ws = D.workers.slice().sort(function(a,b){ return (b.active - a.active) || a.name.localeCompare(b.name); });
+    el.innerHTML = '<div class="card"><b>Add a worker</b><div class="row2" style="margin-top:8px"><input class="big" id="nwName" placeholder="Full name"><input class="big" id="nwEmp" placeholder="Employee # (Asure)" inputmode="numeric"></div><p class="small mut">A 4-number PIN is made for them. You will see it once — write it down or text it to them.</p><button class="btn sm" id="nwAdd">Add worker</button></div>'+
+      '<div class="tw"><table><thead><tr><th>Name</th><th>Emp #</th><th>On list</th><th></th></tr></thead><tbody>'+ws.map(function(w){ return '<tr><td><span class="person">'+avatarHtml(w.id,w.name)+'<span>'+esc(w.name)+'</span></span></td><td><input data-emp="'+esc(w.id)+'" value="'+esc(w.empNo)+'" style="width:70px;padding:6px;border:1px solid #ccc;border-radius:8px;text-align:right" inputmode="numeric"></td><td><button class="btn sm '+(w.active?'':'ghost')+'" data-tog="'+esc(w.id)+'" style="'+(w.active?'background:var(--ok)':'')+'">'+(w.active?'Yes':'No')+'</button></td><td><button class="btn sm ghost" data-photo="'+esc(w.id)+'">Add photo</button> <button class="btn sm ghost" data-pin="'+esc(w.id)+'">New PIN</button></td></tr>'; }).join('')+'</tbody></table></div><p class="small mut">Turning someone off hides their name on the phone app. Their past hours stay.</p><p class="small mut">To add a photo, tap Add photo and pick a picture. A cropped file named like w31.jpg will download. Put that file in the app&apos;s photos folder and republish to make it live. The website is public, so only publish a photo after Matt says it is OK. Uploading from this page cannot save the photo by itself.</p>';
+    function save(w, extra){ return call('saveWorker', { token: A.token, worker: Object.assign({ id: w.id, name: w.name, empNo: w.empNo, active: w.active }, extra) }); }
+    el.onclick = function(ev){
+      var b = ev.target.closest('button'); if (!b) return;
+      if (b.id === 'nwAdd') { var n = document.getElementById('nwName').value.trim(), en = document.getElementById('nwEmp').value.trim(); if (!n) return toast('Type a name', true); b.disabled = true; call('saveWorker', { token: A.token, worker: { name: n, empNo: en, active: true } }).then(function(r){ alert(n+' added.\n\nPIN: '+r.pin+'\n\nWrite this down now. It will not be shown again.'); adminLoad(); }).catch(function(e){ b.disabled=false; toast(e.message, true); }); return; }
+      if (b.dataset.photo) { var pw = D.workers.filter(function(x){ return x.id === b.dataset.photo; })[0]; if (pw) pickWorkerPhoto(pw); return; }
+      var w = D.workers.filter(function(x){ return x.id === (b.dataset.tog || b.dataset.pin); })[0]; if (!w) return;
+      if (b.dataset.tog) { b.disabled = true; save(w, { active: !w.active }).then(function(){ toast(w.name+(w.active?' turned off':' turned on')); adminLoad(); }).catch(function(e){ b.disabled=false; toast(e.message, true); }); }
+      if (b.dataset.pin) { if (!confirm('Make a new PIN for '+w.name+'? Their old PIN stops working.')) return; save(w, { resetPin: true }).then(function(r){ alert(w.name+'\n\nNew PIN: '+r.pin+'\n\nWrite this down now. It will not be shown again.'); }).catch(function(e){ toast(e.message, true); }); }
+    };
+    el.onchange = function(ev){ var i = ev.target; if (!i.dataset.emp) return; var w = D.workers.filter(function(x){ return x.id === i.dataset.emp; })[0]; save(w, { empNo: i.value.trim() }).then(function(){ w.empNo = i.value.trim(); toast('Saved'); }).catch(function(e){ toast(e.message, true); }); };
+  } else if (A.tab === 'jobs') {
+    var js = D.jobs.slice().sort(function(a,b){ return (b.active - a.active) || a.code.localeCompare(b.code); });
+    el.innerHTML = '<div class="card"><b>Add a job</b><div class="row2" style="margin-top:8px"><input class="big" id="njCode" placeholder="Job # (e.g. SC-1043)"><input class="big" id="njName" placeholder="Name / place (optional)"></div><button class="btn sm" id="njAdd" style="margin-top:8px">Add job</button></div>'+
+      '<div class="tw"><table><thead><tr><th>Job #</th><th style="text-align:left">Name</th><th>Shown to crew</th></tr></thead><tbody>'+js.map(function(j){ return '<tr><td><b>'+esc(j.code)+'</b></td><td style="text-align:left"><input data-jn="'+esc(j.code)+'" value="'+esc(j.name)+'" style="width:100%;min-width:160px;padding:6px;border:1px solid #ccc;border-radius:8px"></td><td><button class="btn sm '+(j.active?'':'ghost')+'" data-jt="'+esc(j.code)+'" style="'+(j.active?'background:var(--ok)':'')+'">'+(j.active?'Yes':'No')+'</button></td></tr>'; }).join('')+'</tbody></table></div><p class="small mut">Jobs a worker types in are added here on their own.</p>';
+    el.onclick = function(ev){
+      var b = ev.target.closest('button'); if (!b) return;
+      if (b.id === 'njAdd') { var c = document.getElementById('njCode').value.trim(); if (!c) return toast('Type a job #', true); b.disabled = true; call('saveJob', { token: A.token, job: { code: c, name: document.getElementById('njName').value.trim(), active: true } }).then(function(){ toast('Job added'); adminLoad(); }).catch(function(e){ b.disabled=false; toast(e.message, true); }); }
+      if (b.dataset.jt) { var j = D.jobs.filter(function(x){ return x.code === b.dataset.jt; })[0]; call('saveJob', { token: A.token, job: { code: j.code, name: j.name, active: !j.active } }).then(function(){ adminLoad(); }).catch(function(e){ toast(e.message, true); }); }
+    };
+    el.onchange = function(ev){ var i = ev.target; if (!i.dataset.jn) return; var j = D.jobs.filter(function(x){ return x.code === i.dataset.jn; })[0]; call('saveJob', { token: A.token, job: { code: j.code, name: i.value.trim(), active: j.active } }).then(function(){ j.name = i.value.trim(); toast('Saved'); }).catch(function(e){ toast(e.message, true); }); };
+  } else if (A.tab === 'set') {
+    el.innerHTML = '<div class="card"><b>Overtime rule</b><div class="seg" style="margin-top:8px" id="otr"><button data-r="weekly40" class="'+(D.otRule==='weekly40'?'on':'')+'">Over 40 / week</button><button data-r="daily8" class="'+(D.otRule==='daily8'?'on':'')+'">Over 8 / day + 40 / week</button></div><p class="small mut">Week is Monday to Sunday (week ending Sunday), same as the paper sheets.</p></div>'+
+      '<div class="card"><b>Change office PIN</b><input class="big" id="np" type="password" inputmode="numeric" placeholder="New PIN (4–8 numbers)" style="margin-top:8px"><button class="btn sm" id="npSave" style="margin-top:8px">Save new PIN</button><p class="small mut">Everyone signed in to the office side gets signed out.</p></div>'+
+      '<div class="card"><b>Google Sheet</b><p class="small">Every entry is saved in a Google Sheet. Every change is also written to its Audit tab.</p>'+(D.sheetUrl?'<a class="btn sm ghost" style="text-decoration:none" target="_blank" rel="noopener" href="'+esc(D.sheetUrl)+'">Open the sheet</a>':'')+'</div>'+
+      '<div class="card"><b>Links</b><p class="small">Crew app: <a href="'+esc(crewHref())+'">'+esc(new URL(crewHref(), location.href).href)+'</a><br>Office: this page</p></div>';
+    el.onclick = function(ev){
+      var b = ev.target.closest('button'); if (!b) return;
+      if (b.dataset.r) call('saveSettings', { token: A.token, otRule: b.dataset.r }).then(function(){ toast('Saved'); adminLoad(); }).catch(function(e){ toast(e.message, true); });
+      if (b.id === 'npSave') { var v = document.getElementById('np').value.trim(); if (!/^\d{4,8}$/.test(v)) return toast('Use 4 to 8 numbers', true); call('saveSettings', { token: A.token, newAdminPin: v }).then(function(){ toast('Office PIN changed'); adminOut(); }).catch(function(e){ toast(e.message, true); }); }
+    };
+  }
+}
+function lastFirst(n){ var p = n.trim().split(/\s+/); if (p.length < 2) return n; var last = p.pop(); return last+', '+p.join(' '); }
+function csvCell(v){ v = v == null ? '' : String(v); return /[",\n]/.test(v) ? '"'+v.replace(/"/g,'""')+'"' : v; }
+function exportCsv(kind, S2){
+  var D = A.data, dates = S2.dates, we = mdy(dates[6]), rows = [];
+  if (kind === 'payroll') {
+    rows.push(['Employee #','Employee Name','Week Ending','Regular Hours (E1)','Overtime Hours (E2)','Total Hours','Week Status']);
+    S2.rows.filter(function(r){ return r.c.total > 0; }).forEach(function(r){ rows.push([r.w.empNo, lastFirst(r.w.name), we, h(r.c.regT), h(r.c.otT), h(r.c.total), D.status]); });
+  } else if (kind === 'grid') {
+    rows.push(['Week Ending '+we]);
+    rows.push(['Employee','Emp #','Job'].concat(dates.map(function(d,i){ return DAYS[i]+' '+md(d); })).concat(['Total']));
+    S2.rows.filter(function(r){ return r.c.total > 0; }).forEach(function(r){
+      var byJob = {}; r.es.forEach(function(e){ (byJob[e.job] = byJob[e.job] || [0,0,0,0,0,0,0])[dates.indexOf(e.date)] += e.hours; });
+      Object.keys(byJob).sort().forEach(function(j){ var a = byJob[j]; rows.push([r.w.name, r.w.empNo, j].concat(a.map(function(v){ return v?h(v):''; })).concat([h(a.reduce(function(s,x){return s+x;},0))])); });
+      rows.push([r.w.name, r.w.empNo, 'Total Daily Hours'].concat(r.c.day.map(function(v){ return v?h(v):''; })).concat([h(r.c.total)]));
+      rows.push([r.w.name, r.w.empNo, 'ST Total '+h(r.c.regT)+' | OT Total '+h(r.c.otT)]);
+      rows.push([]);
+    });
+  } else {
+    rows.push(['Date','Day','Employee #','Employee','Job','Start','Stop','Lunch (min)','Hours','Notes','Last changed by','Last changed']);
+    D.entries.slice().sort(function(a,b){ return (a.workerName+a.date) < (b.workerName+b.date) ? -1 : 1; }).forEach(function(e){ rows.push([mdy(e.date), DAYS[dates.indexOf(e.date)], e.empNo, e.workerName, e.job, e.start, e.end, e.start?(+e.lunchMin||0):'', h(e.hours), e.notes, e.updatedBy, e.updatedAt]); });
+  }
+  var csv = '\ufeff' + rows.map(function(r){ return r.map(csvCell).join(','); }).join('\r\n') + '\r\n';
+  var name = 'BCEC-'+(kind==='payroll'?'payroll':kind==='grid'?'timesheet':'entries')+'-WE-'+dates[6]+'.csv';
+  try {
+    var blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+    var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+    toast('Downloaded '+name);
+  } catch (e) { window.open('data:text/csv;charset=utf-8,'+encodeURIComponent(csv)); }
+}
+
+/* ---------- go ---------- */
+if (VIEW === 'office') officeStart(); else crewStart();
+})();
+</script>
+</body>
+</html>
